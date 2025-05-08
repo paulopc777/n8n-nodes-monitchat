@@ -1,19 +1,16 @@
 {
-  "name": "n8n-nodes-<...>",
+  "name": "n8n-nodes-monitchat",
   "version": "0.1.0",
-  "description": "",
+  "description": "User Monitchat in n8n",
   "keywords": [
     "n8n-community-node-package"
   ],
   "license": "MIT",
-  "homepage": "",
-  "author": {
-    "name": "",
-    "email": ""
-  },
+  "homepage": "https://monitchat.dev.br/",
+  "author": "Paulo Cesar <bufalo.pc777@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/<...>/n8n-nodes-<...>.git"
+    "url": "git+https://github.com/paulopc777/nodes-start.git"
   },
   "engines": {
     "node": ">=18.10",
@@ -54,5 +51,8 @@
   },
   "peerDependencies": {
     "n8n-workflow": "*"
+  },
+  "bugs": {
+    "url": "https://github.com/paulopc777/nodes-start/issues"
   }
 }
