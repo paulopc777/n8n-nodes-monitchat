@@ -13,15 +13,16 @@ export class SendMessageApi implements ICredentialType {
             displayName: 'API Key',
             name: 'apiKey',
             type: 'string',
-												typeOptions: { password: true },
+            typeOptions: { password: true },
             default: '',
+            required: true,
         },
     ];
     authenticate: IAuthenticateGeneric = {
         type: 'generic',
         properties: {
             headers: {
-                'Authorization': 'Bearer {{$credentials.apiKey}}'
+                Authorization: '=Bearer {{$credentials.apiKey}}',
             }
         },
     };

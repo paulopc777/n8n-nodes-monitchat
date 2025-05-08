@@ -1,6 +1,6 @@
-import { INodeType, INodeTypeDescription } from 'n8n-workflow';
+import { IExecuteFunctions, INodeExecutionData, INodeType, INodeTypeDescription, IRequestOptions } from 'n8n-workflow';
 
-export class NasaPics implements INodeType {
+export class Monitchat implements INodeType {
     description: INodeTypeDescription = {
         displayName: 'Monitchat',
         name: 'monitchat',
@@ -12,8 +12,8 @@ export class NasaPics implements INodeType {
         defaults: {
             name: 'Monitchat',
         },
-        inputs: ['main'],
-        outputs: ['main'],
+        inputs: ['main'] as any,
+        outputs: ['main'] as any,
         credentials: [
             {
                 name: 'SendMessageApi',
@@ -29,29 +29,30 @@ export class NasaPics implements INodeType {
         },
         properties: [
             {
+                displayName: 'Credential',
+                name: 'credentialId',
+                type: 'credentialsSelect',
+                typeOptions: {
+                    credentialsType: 'string',
+                    required: true,
+                },
+                default: '',
+            },
+            {
                 displayName: 'Operation',
                 name: 'operation',
                 type: 'options',
-																noDataExpression: true,
+                noDataExpression: true,
                 options: [
                     {
                         name: 'Send Message',
                         value: 'sendMessage',
                         description: 'Send a message to Monitchat',
-																								action: 'Send a message to monitchat',
+                        action: 'Send a message to monitchat',
                     },
                 ],
                 default: 'sendMessage',
                 required: true,
-            },
-            {
-                displayName: 'Token',
-                name: 'token',
-                type: 'string',
-																typeOptions: { password: true },
-                default: '',
-                required: true,
-                description: 'The token for authentication',
             },
             {
                 displayName: 'Message',
@@ -87,4 +88,68 @@ export class NasaPics implements INodeType {
             }
         ]
     };
+
+    async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
+        const items = this.getInputData();
+        const returnData: INodeExecutionData[] = [];
+
+        const operation = this.getNodeParameter('operation', 0) as string;
+
+        for (let i = 0; i < items.length; i++) {
+            if (operation === 'sendMessage') {
+                // Get credentials
+                const credentials = await this.getCredentials('SendMessageApi');
+
+                // Get parameters
+                const message = this.getNodeParameter('message', i) as string;
+                const phoneNumber = this.getNodeParameter('phone_number', i) as string;
+                const accountNumber = this.getNodeParameter('account_number', i) as string;
+                const openTicket = this.getNodeParameter('open_ticket', i) as boolean;
+
+                // Prepare request options
+                const options: IRequestOptions = {
+                    method: 'POST',
+                    uri: 'https://api-v2.monitchat.com/api/v1/send-message',
+                    body: {
+                        message,
+                        phone_number: phoneNumber,
+                        account_number: accountNumber,
+                        open_ticket: openTicket,
+                    },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${credentials.token}`,
+                    },
+                    json: true,
+                };
+
+                // Make the API request
+                try {
+                    const response = await this.helpers.request(options);
+                    returnData.push({
+                        json: response,
+                        pairedItem: {
+                            item: i,
+                        },
+                    });
+                } catch (error) {
+                    if (this.continueOnFail()) {
+                        returnData.push({
+                            json: {
+                                error: error.message,
+                            },
+                            pairedItem: {
+                                item: i,
+                            },
+                        });
+                        continue;
+                    }
+                    throw error;
+                }
+            }
+        }
+
+        return [returnData];
+    }
 }
