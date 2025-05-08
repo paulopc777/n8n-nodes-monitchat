@@ -1,22 +1,19 @@
-import { INodeType, INodeTypeDescription, NodeConnectionType } from 'n8n-workflow';
-
-const input: NodeConnectionType = NodeConnectionType.Main
+import { INodeType, INodeTypeDescription } from 'n8n-workflow';
 
 export class NasaPics implements INodeType {
     description: INodeTypeDescription = {
         displayName: 'Monitchat',
         name: 'monitchat',
-        icon: 'file:monitchat.png',
+        icon: 'file:monitchat.svg',
         group: ['transform'],
         version: 1,
         subtitle: '={{$parameter["operation"]}}',
         description: 'Send messages to Monitchat',
         defaults: {
             name: 'Monitchat',
-            color: '#00BFFF',
         },
-        inputs: [input],
-        outputs: [input],
+        inputs: ['main'],
+        outputs: ['main'],
         credentials: [
             {
                 name: 'SendMessageApi',
@@ -35,24 +32,26 @@ export class NasaPics implements INodeType {
                 displayName: 'Operation',
                 name: 'operation',
                 type: 'options',
+																noDataExpression: true,
                 options: [
                     {
                         name: 'Send Message',
                         value: 'sendMessage',
                         description: 'Send a message to Monitchat',
+																								action: 'Send a message to monitchat',
                     },
                 ],
                 default: 'sendMessage',
                 required: true,
-                description: 'The operation to perform.',
             },
             {
                 displayName: 'Token',
                 name: 'token',
                 type: 'string',
+																typeOptions: { password: true },
                 default: '',
                 required: true,
-                description: 'The token for authentication.',
+                description: 'The token for authentication',
             },
             {
                 displayName: 'Message',
@@ -60,7 +59,7 @@ export class NasaPics implements INodeType {
                 type: 'string',
                 default: '',
                 required: true,
-                description: 'The message to send.',
+                description: 'The message to send',
             },
             {
                 displayName: 'Phone Number',
@@ -68,7 +67,7 @@ export class NasaPics implements INodeType {
                 type: 'string',
                 default: '',
                 required: true,
-                description: 'The phone number to send the message to.',
+                description: 'The phone number to send the message to',
             },
             {
                 displayName: 'Account Number',
@@ -76,7 +75,7 @@ export class NasaPics implements INodeType {
                 type: 'string',
                 default: '',
                 required: true,
-                description: 'The account number associated with the message.',
+                description: 'The account number associated with the message',
             },
             {
                 displayName: 'Open Ticket',
@@ -84,7 +83,7 @@ export class NasaPics implements INodeType {
                 type: 'boolean',
                 default: false,
                 required: true,
-                description: 'Whether to open a ticket or not.',
+                description: 'Whether to open a ticket or not',
             }
         ]
     };
