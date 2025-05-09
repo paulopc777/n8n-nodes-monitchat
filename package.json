@@ -36,7 +36,7 @@
   "n8n": {
     "n8nNodesApiVersion": 1,
     "credentials": [
-      "dist/credentials/SendMessageApi.credentials.js"
+      "dist/credentials/Monitchat.credentials.js"
     ],
     "nodes": [
       "dist/nodes/Monitchat/Monitchat.node.js"

@@ -4,10 +4,9 @@ export class Monitchat implements INodeType {
     description: INodeTypeDescription = {
         displayName: 'Monitchat',
         name: 'monitchat',
-        icon: 'file:monitchat.svg',
+        icon: 'file:monitchat.png',
         group: ['transform'],
         version: 1,
-        subtitle: '={{$parameter["operation"]}}',
         description: 'Send messages to Monitchat',
         defaults: {
             name: 'Monitchat',
@@ -16,7 +15,7 @@ export class Monitchat implements INodeType {
         outputs: ['main'] as any,
         credentials: [
             {
-                name: 'SendMessageApi',
+                name: 'monitchat',
                 required: true,
             },
         ],
@@ -28,16 +27,6 @@ export class Monitchat implements INodeType {
             },
         },
         properties: [
-            {
-                displayName: 'Credential',
-                name: 'credentialId',
-                type: 'credentialsSelect',
-                typeOptions: {
-                    credentialsType: 'string',
-                    required: true,
-                },
-                default: '',
-            },
             {
                 displayName: 'Operation',
                 name: 'operation',
@@ -98,7 +87,7 @@ export class Monitchat implements INodeType {
         for (let i = 0; i < items.length; i++) {
             if (operation === 'sendMessage') {
                 // Get credentials
-                const credentials = await this.getCredentials('SendMessageApi');
+                const credentials = await this.getCredentials('monitchat');
 
                 // Get parameters
                 const message = this.getNodeParameter('message', i) as string;
@@ -109,9 +98,10 @@ export class Monitchat implements INodeType {
                 // Prepare request options
                 const options: IRequestOptions = {
                     method: 'POST',
-                    uri: 'https://api-v2.monitchat.com/api/v1/send-message',
+                    uri: 'https://api-v2.monitchat.com/api/v1/message',
                     body: {
                         message,
+                        token: credentials.apiKey,
                         phone_number: phoneNumber,
                         account_number: accountNumber,
                         open_ticket: openTicket,
@@ -119,7 +109,7 @@ export class Monitchat implements INodeType {
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        'Authorization': `Bearer ${credentials.token}`,
+                        'Authorization': `Bearer ${credentials.apiKey}`,
                     },
                     json: true,
                 };
@@ -134,6 +124,7 @@ export class Monitchat implements INodeType {
                         },
                     });
                 } catch (error) {
+                   
                     if (this.continueOnFail()) {
                         returnData.push({
                             json: {

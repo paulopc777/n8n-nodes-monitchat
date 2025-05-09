@@ -2,7 +2,7 @@ module.exports = {
     packageName: 'n8n-nodes-monitchat',
     nodeTypes: {
         credentials: [
-            'dist/credentials/SendMessageApi.credentials.js'
+            'dist/credentials/Monitchat.credentials.js'
         ],
         nodes: [
             'dist/nodes/Monitchat/Monitchat.node.js',
