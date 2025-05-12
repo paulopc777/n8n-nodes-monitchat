@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-monitchat",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "User Monitchat in n8n",
   "keywords": [
     "n8n-community-node-package"
@@ -55,7 +55,6 @@
     "url": "https://github.com/paulopc777/nodes-start/issues"
   },
   "dependencies": {
-    "n8n-nodes-monitchat": "^1.0.3",
     "n8n-workflow": "^1.82.0",
     "request-promise-native": "^1.0.9"
   }
