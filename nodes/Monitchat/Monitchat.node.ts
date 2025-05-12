@@ -5,16 +5,22 @@ import { forwardConversationProperties } from './properties/forwardConversation/
 
 
 async function getUsers(this: ILoadOptionsFunctions) {
+    const credentials = "e6fc0034-9a45-4038-a3cf-14f9b99f8d02";
+
     const response = await this.helpers.request({
         method: 'GET',
-        url: 'https://api-v4.monitchat.com/api/v1/user?take=50&filter[0][0]=active&filter[0][1]=%3D&filter[0][2]=1&order=is_online&orderDirection=desc', // Substitua pelo endpoint da sua API
-        headers: {
-            'Authorization': `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvYXV0aC5tb25pdGNoYXQuY29tXC9sb2dpbiIsImlhdCI6MTc0Njc5MDI4NCwiZXhwIjoxNzQ2ODc2Njg0LCJuYmYiOjE3NDY3OTAyODQsImp0aSI6Im9XYlJENlJDRXV2VXJGUVgiLCJzdWIiOjYyNzIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.EPBdIVwMpDAqAyysUL622AGF4h5xG9Dq74-y7Y0AhMw`,
+        url: 'https://api-v4.monitchat.com/api/v1/token/user',
+        qs: {
+            token: credentials
         },
+        json: true,
     });
+    
+    const users = response.data;
 
-    const json = JSON.parse(response);
-    const users = json.data;
+    if (!users || !Array.isArray(users)) {
+        throw new Error('Não foi possível obter a lista de usuários ou o formato da resposta é inválido');
+    }
 
     return users.map((user: { id: string, name: string }) => ({
         name: user.name,
@@ -24,7 +30,7 @@ async function getUsers(this: ILoadOptionsFunctions) {
 
 export class Monitchat implements INodeType {
     methods?: { loadOptions?: { [key: string]: (this: ILoadOptionsFunctions) => Promise<INodePropertyOptions[]>; }; listSearch?: { [key: string]: (this: ILoadOptionsFunctions, filter?: string, paginationToken?: string) => Promise<INodeListSearchResult>; }; credentialTest?: { [functionName: string]: ICredentialTestFunction; }; resourceMapping?: { [functionName: string]: (this: ILoadOptionsFunctions) => Promise<ResourceMapperFields>; }; localResourceMapping?: { [functionName: string]: (this: ILocalLoadOptionsFunctions) => Promise<ResourceMapperFields>; }; actionHandler?: { [functionName: string]: (this: ILoadOptionsFunctions, payload: IDataObject | string | undefined) => Promise<NodeParameterValueType>; }; } | undefined;
-    
+
     constructor() {
         this.methods = {
             loadOptions: {
@@ -50,13 +56,13 @@ export class Monitchat implements INodeType {
                 name: 'monitchat',
                 required: true,
             },
-        ],
-        requestDefaults: {
+        ], requestDefaults: {
             baseURL: 'https://api-v2.monitchat.com/api/v1',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
             },
+            json: true,
         },
         properties: [
             {
@@ -108,9 +114,7 @@ export class Monitchat implements INodeType {
                 const message = this.getNodeParameter('message', i) as string;
                 const phoneNumber = this.getNodeParameter('phone_number', i) as string;
                 const accountNumber = this.getNodeParameter('account_number', i) as string;
-                const openTicket = this.getNodeParameter('open_ticket', i) as boolean;
-
-                // Prepare request options
+                const openTicket = this.getNodeParameter('open_ticket', i) as boolean;                // Prepare request options
                 const options: IRequestOptions = {
                     method: 'POST',
                     uri: 'https://api-v2.monitchat.com/api/v1/message',
@@ -120,11 +124,6 @@ export class Monitchat implements INodeType {
                         phone_number: phoneNumber,
                         account_number: accountNumber,
                         open_ticket: openTicket,
-                    },
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${credentials.apiKey}`,
                     },
                     json: true,
                 };
@@ -159,26 +158,59 @@ export class Monitchat implements INodeType {
                 const credentials = await this.getCredentials('monitchat');
 
                 // Get parameters
-                const comment = this.getNodeParameter('comment', i) as string;
-                const phoneNumber = this.getNodeParameter('phone_number', i) as string;
-                const accountNumber = this.getNodeParameter('account_number', i) as string;
-                const openTicket = this.getNodeParameter('open_ticket', i) as boolean;
-
-                // Prepare request options
+                const conversation_id = this.getNodeParameter('conversation_id', i) as string;
+                const comment = this.getNodeParameter('comment', i) as string;                // Prepare request options
                 const options: IRequestOptions = {
                     method: 'POST',
-                    uri: 'https://api-v2.monitchat.com/api/v1/comment',
+                    uri: `https://api-v4.monitchat.com/api/v1/token/comment-conversation/${conversation_id}`,
                     body: {
-                        comment,
                         token: credentials.apiKey,
-                        phone_number: phoneNumber,
-                        account_number: accountNumber,
-                        open_ticket: openTicket,
+                        reason: comment
                     },
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${credentials.apiKey}`,
+                    json: true,
+                };
+
+                // Make the API request
+                try {
+                    const response = await this.helpers.request(options);
+                    returnData.push({
+                        json: response,
+                        pairedItem: {
+                            item: i,
+                        },
+                    });
+                } catch (error) {
+
+                    if (this.continueOnFail()) {
+                        returnData.push({
+                            json: {
+                                error: error.message,
+                            },
+                            pairedItem: {
+                                item: i,
+                            },
+                        });
+                        continue;
+                    }
+                    throw error;
+                }
+            }
+
+            if (operation == 'forwardConversation') {
+                // Get credentials
+                const credentials = await this.getCredentials('monitchat');
+
+                // Get parameters
+                const conversation_id = this.getNodeParameter('conversation_id', i) as string;
+                const userId = this.getNodeParameter('userId', i) as string;
+                const Comment = this.getNodeParameter('comment', i) as string;                // Prepare request options
+                const options: IRequestOptions = {
+                    method: 'POST',
+                    uri: `https://api-v4.monitchat.com/api/v1/token/forward-conversation/${conversation_id}`,
+                    body: {
+                        token: credentials.apiKey,
+                        user: userId,
+                        reason: Comment,
                     },
                     json: true,
                 };

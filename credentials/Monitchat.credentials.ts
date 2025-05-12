@@ -21,8 +21,11 @@ export class Monitchat implements ICredentialType {
     authenticate: IAuthenticateGeneric = {
         type: 'generic',
         properties: {
-            headers: {
-                Authorization: '=Bearer {{$credentials.apiKey}}',
+            body: {
+                token: '={{$credentials.apiKey}}',
+            },
+            qs: {
+                token: '={{$credentials.apiKey}}',
             }
         },
     };
