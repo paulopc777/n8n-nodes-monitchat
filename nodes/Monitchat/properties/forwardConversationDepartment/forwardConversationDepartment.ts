@@ -3,12 +3,12 @@ import { INodeProperties } from "n8n-workflow";
 const displayOptions = {
     displayOptions: {
         show: {
-            operation: ['forwardConversationUser'],
+            operation: ['forwardConversationDepartment'],
         }
     }
 }
 
-export const forwardConversationUserProperties: INodeProperties[] = [
+export const forwardConversationDepartmentProperties: INodeProperties[] = [
     {
         displayName: 'Conversation ID',
         name: 'conversation_id',
@@ -19,15 +19,15 @@ export const forwardConversationUserProperties: INodeProperties[] = [
         ...displayOptions
     },
     {
-        displayName: 'Usuário',
-        name: 'userId',
+        displayName: 'Department',
+        name: 'departmentId',
         type: 'options',
         typeOptions: {
-            loadOptionsMethod: 'getUsers',
+            loadOptionsMethod: 'getDepartments',
         },
         default: '',
         required: true,
-        description: 'Selecione um usuário do seu sistema',
+        description: 'Selecione um departamento do seu sistema',
         ...displayOptions
     },
     {
