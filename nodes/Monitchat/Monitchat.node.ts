@@ -6,13 +6,12 @@ import { forwardConversationDepartmentProperties } from './properties/forwardCon
 
 
 async function getUsers(this: ILoadOptionsFunctions) {
-    const credentials = "e6fc0034-9a45-4038-a3cf-14f9b99f8d02";
-
+    const credentials = await this.getCredentials('monitchat')
     const response = await this.helpers.request({
         method: 'GET',
         url: 'https://api-v4.monitchat.com/api/v1/token/user',
         qs: {
-            token: credentials
+            token: credentials.apiKey
         },
         json: true,
     });
@@ -30,13 +29,12 @@ async function getUsers(this: ILoadOptionsFunctions) {
 }
 
 async function getDepartments(this: ILoadOptionsFunctions) {
-    const credentials = "e6fc0034-9a45-4038-a3cf-14f9b99f8d02";
-
+    const credentials = await this.getCredentials('monitchat')
     const response = await this.helpers.request({
         method: 'GET',
         url: 'https://api-v4.monitchat.com/api/v1/token/departament',
         qs: {
-            token: credentials
+            token: credentials.apiKey
         },
         json: true,
     });

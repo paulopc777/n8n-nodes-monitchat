@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-monitchat",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "User Monitchat in n8n",
   "keywords": [
     "n8n-community-node-package"
