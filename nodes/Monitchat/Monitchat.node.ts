@@ -3,6 +3,7 @@ import { sendMessageProperties } from './properties/sendMessage/sendMessage.prop
 import { sendCommentProperties } from './properties/sendComment/sendComment.properties';
 import { forwardConversationUserProperties } from './properties/forwardConversation/forwardConversation';
 import { forwardConversationDepartmentProperties } from './properties/forwardConversationDepartment/forwardConversationDepartment';
+import { conversationAutoReplyProperties } from './properties/conversationAutoReply/conversationAutoReply.properties';
 
 
 async function getUsers(this: ILoadOptionsFunctions) {
@@ -119,6 +120,12 @@ export class Monitchat implements INodeType {
                         value: 'forwardConversationDepartment',
                         description: 'Forward a conversation from department to Monitchat',
                         action: 'Forward a conversation from department to monitchat',
+                    },
+                    {
+                        name: 'Conversation Auto Reply',
+                        value: 'conversationAutoReply',
+                        description: 'Change a conversation auto reply to Monitchat',
+                        action: 'Change a conversation auto reply to monitchat',
                     }
                 ],
                 default: 'sendMessage',
@@ -128,6 +135,7 @@ export class Monitchat implements INodeType {
             ...sendCommentProperties,
             ...forwardConversationUserProperties,
             ...forwardConversationDepartmentProperties,
+            ...conversationAutoReplyProperties,
         ]
     };
 
@@ -305,6 +313,47 @@ export class Monitchat implements INodeType {
                     });
                 } catch (error) {
 
+                    if (this.continueOnFail()) {
+                        returnData.push({
+                            json: {
+                                error: error.message,
+                            },
+                            pairedItem: {
+                                item: i,
+                            },
+                        });
+                        continue;
+                    }
+                    throw error;
+                }
+            }
+
+            if (operation == "conversationAutoReply") {
+                // PUT https://api-v4.monitchat.com/api/v1/token/conversation-auto-reply/4262103
+                const credentials = await this.getCredentials('monitchat');
+
+                const auto_reply = this.getNodeParameter('auto_reply', i) as boolean;
+                const conversation_id = this.getNodeParameter('conversation_id', i) as string;
+                const options: IRequestOptions = {
+                    method: 'PUT',
+                    uri: `https://api-v4.monitchat.com/api/v1/token/conversation-auto-reply/${conversation_id}`,
+                    body: {
+                        token: credentials.apiKey,
+                        active: auto_reply
+                    },
+                    json: true,
+                };
+
+                // Make the API request
+                try {
+                    const response = await this.helpers.request(options);
+                    returnData.push({
+                        json: response,
+                        pairedItem: {
+                            item: i,
+                        },
+                    });
+                } catch (error) {
                     if (this.continueOnFail()) {
                         returnData.push({
                             json: {
