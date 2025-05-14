@@ -75,6 +75,7 @@ export class Monitchat implements INodeType {
         defaults: {
             name: 'Monitchat',
         },
+        usableAsTool: true,
         inputs: ['main'] as any,
         outputs: ['main'] as any,
         credentials: [
