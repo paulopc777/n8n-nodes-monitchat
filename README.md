@@ -1,46 +1,92 @@
-![Banner image](https://user-images.githubusercontent.com/10284570/173569848-c624317f-42b1-45a6-ab09-f0ea3c247648.png)
+# n8n-nodes-monitchat
 
-# n8n-nodes-starter
+[![NPM version](https://img.shields.io/npm/v/n8n-nodes-monitchat.svg)](https://www.npmjs.com/package/n8n-nodes-monitchat)
 
-This repo contains example nodes to help you get started building your own custom integrations for [n8n](n8n.io). It includes the node linter and other dependencies.
+Este pacote contém nós personalizados para o [n8n](https://n8n.io) que permitem integração com a plataforma omnichannel [Monitchat](https://monitchat.dev.br/), com foco específico em funcionalidades para WhatsApp.
 
-To make your custom node available to the community, you must create it as an npm package, and [submit it to the npm registry](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry).
+## Sobre o Monitchat
 
-## Prerequisites
+Monitchat é uma plataforma omnichannel que permite gerenciar comunicações com clientes através de diversos canais, incluindo WhatsApp, Facebook Messenger, Instagram, e-mail, chat ao vivo e mais. Esta integração se concentra nas funcionalidades de comunicação via WhatsApp.
 
-You need the following installed on your development machine:
+## Instalação
 
-* [git](https://git-scm.com/downloads)
-* Node.js and pnpm. Minimum version Node 18. You can find instructions on how to install both using nvm (Node Version Manager) for Linux, Mac, and WSL [here](https://github.com/nvm-sh/nvm). For Windows users, refer to Microsoft's guide to [Install NodeJS on Windows](https://docs.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-windows).
-* Install n8n with:
-  ```
-  pnpm install n8n -g
-  ```
-* Recommended: follow n8n's guide to [set up your development environment](https://docs.n8n.io/integrations/creating-nodes/build/node-development-environment/).
+Para instalar este pacote no seu n8n, execute o seguinte comando no diretório raiz da sua instalação n8n:
 
-## Using this starter
+```bash
+npm install n8n-nodes-monitchat
+```
 
-These are the basic steps for working with the starter. For detailed guidance on creating and publishing nodes, refer to the [documentation](https://docs.n8n.io/integrations/creating-nodes/).
+Para usuários do pnpm:
 
-1. [Generate a new repository](https://github.com/n8n-io/n8n-nodes-starter/generate) from this template repository.
-2. Clone your new repo:
-   ```
-   git clone https://github.com/<your organization>/<your-repo-name>.git
-   ```
-3. Run `pnpm i` to install dependencies.
-4. Open the project in your editor.
-5. Browse the examples in `/nodes` and `/credentials`. Modify the examples, or replace them with your own nodes.
-6. Update the `package.json` to match your details.
-7. Run `pnpm lint` to check for errors or `pnpm lintfix` to automatically fix errors when possible.
-8. Test your node locally. Refer to [Run your node locally](https://docs.n8n.io/integrations/creating-nodes/test/run-node-locally/) for guidance.
-9. Replace this README with documentation for your node. Use the [README_TEMPLATE](README_TEMPLATE.md) to get started.
-10. Update the LICENSE file to use your details.
-11. [Publish](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry) your package to npm.
+```bash
+pnpm add n8n-nodes-monitchat
+```
 
-## More information
+## Funcionalidades
 
-Refer to our [documentation on creating nodes](https://docs.n8n.io/integrations/creating-nodes/) for detailed information on building your own nodes.
+Este pacote fornece os seguintes nós para interação com a API Monitchat:
 
-## License
+### Nó Monitchat
 
-[MIT](https://github.com/n8n-io/n8n-nodes-starter/blob/master/LICENSE.md)
+Este nó contém várias operações para trabalhar com o WhatsApp através da plataforma Monitchat:
+
+#### Operações Disponíveis
+
+1. **Envio de Mensagens**
+   - Envie mensagens de texto para contatos do WhatsApp
+   - Especifique o número de telefone e a conta WhatsApp para envio
+
+2. **Envio de Comentários**
+   - Adicione comentários internos às conversas
+   - Útil para colaboração entre atendentes
+
+3. **Encaminhamento de Conversas**
+   - Encaminhe conversas para outros usuários da plataforma
+   - Possibilidade de adicionar notas ao encaminhar
+
+4. **Encaminhamento para Departamentos**
+   - Encaminhe conversas para departamentos específicos
+   - Gerencie atendimento por setores
+
+5. **Respostas Automáticas**
+   - Configure respostas automáticas para conversas
+   - Otimize o tempo de resposta para perguntas frequentes
+
+## Configuração
+
+### Credenciais Necessárias
+
+Para utilizar estes nós, você precisará:
+
+1. Uma conta ativa na plataforma Monitchat
+2. Uma API Key válida, que pode ser obtida no painel administrativo do Monitchat
+
+Para configurar as credenciais no n8n:
+
+1. Vá para `Credenciais` no menu do n8n
+2. Clique em `Adicionar nova credencial`
+3. Selecione o tipo `Monitchat`
+4. Insira sua API Key no campo correspondente
+5. Salve as credenciais
+
+## Exemplo de Uso
+
+### Envio de Mensagem pelo WhatsApp
+
+1. Adicione o nó `Monitchat` ao seu fluxo de trabalho
+2. Selecione a operação "Enviar Mensagem"
+3. Configure o número de telefone do destinatário (com código do país)
+4. Digite a mensagem a ser enviada
+5. Selecione a conta WhatsApp para envio (se houver múltiplas contas disponíveis)
+6. Execute o fluxo para enviar a mensagem
+
+## Suporte
+
+Para suporte ou dúvidas sobre este pacote, entre em contato:
+
+- Email: bufalo.pc777@gmail.com
+- GitHub: [https://github.com/paulopc777/nodes-start](https://github.com/paulopc777/nodes-start)
+
+## Licença
+
+[MIT](LICENSE.md)
