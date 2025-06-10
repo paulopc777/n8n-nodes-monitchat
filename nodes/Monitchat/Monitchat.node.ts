@@ -385,7 +385,7 @@ export class Monitchat implements INodeType {
                 const accountNumber = this.getNodeParameter('account_number', i) as string;
                 const fileName = this.getNodeParameter('file_name', i) as string;
                 const fileUrl = this.getNodeParameter('file_url', i) as string;
-
+                const fileType = this.getNodeParameter('file_type', i) as string;
                 // Prepare request options
                 const options: IRequestOptions = {
                     method: 'POST',
@@ -395,7 +395,7 @@ export class Monitchat implements INodeType {
                         message: message,
                         phone_number: phoneNumber,
                         account_number: accountNumber,
-                        type: 'image',
+                        type: fileType,
                         name: fileName,
                         file_name: fileName,
                         url: fileUrl,

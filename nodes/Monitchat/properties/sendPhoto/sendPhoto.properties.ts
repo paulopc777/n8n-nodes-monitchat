@@ -10,11 +10,42 @@ const displayOptions = {
 
 export const sendPhotoProperties: INodeProperties[] = [
     {
+        displayName: 'File Type',
+        name: 'file_type',
+        type: 'options',
+        options: [
+            {
+                name: 'Image',
+                value: 'image',
+                description: 'Send an image file'
+            },
+            {
+                name: 'Video',
+                value: 'video',
+                description: 'Send a video file'
+            },
+            {
+                name: 'Audio',
+                value: 'audio',
+                description: 'Send an audio file'
+            },
+            {
+                name: 'Document',
+                value: 'document',
+                description: 'Send a document file'
+            }
+        ],
+        default: 'document',
+        required: true,
+        description: 'The type of file to send',
+        ...displayOptions
+    },
+    {
         displayName: 'Message',
         name: 'message',
         type: 'string',
         default: '',
-        required: true,
+        required: false,
         description: 'The message to send',
         ...displayOptions
     },
@@ -53,7 +84,6 @@ export const sendPhotoProperties: INodeProperties[] = [
         required: true,
         description: 'The URL of the file to send',
         ...displayOptions
-    },
-
+    }
 ]
 
