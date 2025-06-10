@@ -4,6 +4,7 @@ import { sendCommentProperties } from './properties/sendComment/sendComment.prop
 import { forwardConversationUserProperties } from './properties/forwardConversation/forwardConversation';
 import { forwardConversationDepartmentProperties } from './properties/forwardConversationDepartment/forwardConversationDepartment';
 import { conversationAutoReplyProperties } from './properties/conversationAutoReply/conversationAutoReply.properties';
+import { sendPhotoProperties } from './properties/sendPhoto/sendPhoto.properties';
 
 
 async function getUsers(this: ILoadOptionsFunctions) {
@@ -104,6 +105,12 @@ export class Monitchat implements INodeType {
                         action: 'Send a message to monitchat',
                     },
                     {
+                        name: 'Send Photo',
+                        value: 'sendPhoto',
+                        description: 'Send a photo to Monitchat',
+                        action: 'Send a photo to monitchat',
+                    },
+                    {
                         name: 'Send Comment',
                         value: 'sendComment',
                         description: 'Send a comment to Monitchat',
@@ -136,6 +143,7 @@ export class Monitchat implements INodeType {
             ...forwardConversationUserProperties,
             ...forwardConversationDepartmentProperties,
             ...conversationAutoReplyProperties,
+            ...sendPhotoProperties
         ]
     };
 
@@ -367,6 +375,58 @@ export class Monitchat implements INodeType {
                     }
                     throw error;
                 }
+            }
+
+            if (operation == "sendPhoto") {
+                // https://api-v2.monitchat.com/api/v1/media/send
+                const credentials = await this.getCredentials('monitchat');
+                const message = this.getNodeParameter('message', i) as string;
+                const phoneNumber = this.getNodeParameter('phone_number', i) as string;
+                const accountNumber = this.getNodeParameter('account_number', i) as string;
+                const fileName = this.getNodeParameter('file_name', i) as string;
+                const fileUrl = this.getNodeParameter('file_url', i) as string;
+
+                // Prepare request options
+                const options: IRequestOptions = {
+                    method: 'POST',
+                    uri: `https://api-v2.monitchat.com/api/v1/media/send`,
+                    body: {
+                        token: credentials.apiKey,
+                        message: message,
+                        phone_number: phoneNumber,
+                        account_number: accountNumber,
+                        type: 'image',
+                        name: fileName,
+                        file_name: fileName,
+                        url: fileUrl,
+                    },
+                    json: true,
+                };
+
+                // Make the API request
+                try {
+                    const response = await this.helpers.request(options);
+                    returnData.push({
+                        json: response,
+                        pairedItem: {
+                            item: i,
+                        },
+                    });
+                } catch (error) {
+                    if (this.continueOnFail()) {
+                        returnData.push({
+                            json: {
+                                error: error.message,
+                            },
+                            pairedItem: {
+                                item: i,
+                            },
+                        });
+                        continue;
+                    }
+                    throw error;
+                }
+
             }
 
         }
