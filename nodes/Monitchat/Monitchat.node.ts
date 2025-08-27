@@ -469,7 +469,7 @@ export class Monitchat implements INodeType {
                 // Prepare request options
                 const options: IRequestOptions = {
                     method: 'POST',
-                    uri: `https://api-v2.monitchat.com/api/v1/token/setTicketStatus`,
+                    uri: `https://api-v4.monitchat.com/api/v1/token/setTicketStatus`,
                     body: {
                         token: credentials.apiKey,
                         status_id: statusId,
