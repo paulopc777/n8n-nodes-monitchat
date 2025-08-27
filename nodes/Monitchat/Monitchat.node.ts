@@ -5,6 +5,7 @@ import { forwardConversationUserProperties } from './properties/forwardConversat
 import { forwardConversationDepartmentProperties } from './properties/forwardConversationDepartment/forwardConversationDepartment';
 import { conversationAutoReplyProperties } from './properties/conversationAutoReply/conversationAutoReply.properties';
 import { sendPhotoProperties } from './properties/sendPhoto/sendPhoto.properties';
+import { changeTicketStatusProperties } from './properties/changeTicketStatus/changeTicketStatus';
 
 
 async function getUsers(this: ILoadOptionsFunctions) {
@@ -53,6 +54,29 @@ async function getDepartments(this: ILoadOptionsFunctions) {
     }));
 }
 
+async function getTicketStatus(this: ILoadOptionsFunctions) {
+    const credentials = await this.getCredentials('monitchat')
+    const response = await this.helpers.request({
+        method: 'GET',
+        url: `https://api-v4.monitchat.com/api/v1/token/ticket-status`,
+        qs: {
+            token: credentials.apiKey
+        },
+        json: true,
+    });
+
+    const ticket = response.data.data;
+
+    if (!ticket) {
+        throw new Error('Não foi possível obter o status do ticket');
+    }
+
+    return ticket.map((status: { id: string, description: string }) => ({
+        id: status.id,
+        status: status.description,
+    }));
+}
+
 export class Monitchat implements INodeType {
     methods?: { loadOptions?: { [key: string]: (this: ILoadOptionsFunctions) => Promise<INodePropertyOptions[]>; }; listSearch?: { [key: string]: (this: ILoadOptionsFunctions, filter?: string, paginationToken?: string) => Promise<INodeListSearchResult>; }; credentialTest?: { [functionName: string]: ICredentialTestFunction; }; resourceMapping?: { [functionName: string]: (this: ILoadOptionsFunctions) => Promise<ResourceMapperFields>; }; localResourceMapping?: { [functionName: string]: (this: ILocalLoadOptionsFunctions) => Promise<ResourceMapperFields>; }; actionHandler?: { [functionName: string]: (this: ILoadOptionsFunctions, payload: IDataObject | string | undefined) => Promise<NodeParameterValueType>; }; } | undefined;
 
@@ -60,7 +84,8 @@ export class Monitchat implements INodeType {
         this.methods = {
             loadOptions: {
                 getUsers: getUsers,
-                getDepartments: getDepartments
+                getDepartments: getDepartments,
+                getTicketStatus: getTicketStatus
             },
         };
     }
@@ -133,6 +158,12 @@ export class Monitchat implements INodeType {
                         value: 'conversationAutoReply',
                         description: 'Change a conversation auto reply to Monitchat',
                         action: 'Change a conversation auto reply to monitchat',
+                    },
+                    {
+                        name: 'Change Ticket Status',
+                        value: 'changeTicketStatus',
+                        description: 'Change the status of a ticket in Monitchat',
+                        action: 'Change the status of a ticket in monitchat',
                     }
                 ],
                 default: 'sendMessage',
@@ -143,7 +174,8 @@ export class Monitchat implements INodeType {
             ...forwardConversationUserProperties,
             ...forwardConversationDepartmentProperties,
             ...conversationAutoReplyProperties,
-            ...sendPhotoProperties
+            ...sendPhotoProperties,
+            ...changeTicketStatusProperties
         ]
     };
 
@@ -427,6 +459,48 @@ export class Monitchat implements INodeType {
                     throw error;
                 }
 
+            }
+
+            if(operation == "changeTicketStatus") {
+                const credentials = await this.getCredentials('monitchat');
+                const conversationId = this.getNodeParameter('conversation_id', i) as string;
+                const statusId = this.getNodeParameter('statusId', i) as string;
+
+                // Prepare request options
+                const options: IRequestOptions = {
+                    method: 'POST',
+                    uri: `https://api-v2.monitchat.com/api/v1/token/setTicketStatus`,
+                    body: {
+                        token: credentials.apiKey,
+                        status_id: statusId,
+                        data: conversationId
+                    },
+                    json: true,
+                };
+
+                // Make the API request
+                try {
+                    const response = await this.helpers.request(options);
+                    returnData.push({
+                        json: response,
+                        pairedItem: {
+                            item: i,
+                        },
+                    });
+                } catch (error) {
+                    if (this.continueOnFail()) {
+                        returnData.push({
+                            json: {
+                                error: error.message,
+                            },
+                            pairedItem: {
+                                item: i,
+                            },
+                        });
+                        continue;
+                    }
+                    throw error;
+                }
             }
 
         }
