@@ -72,8 +72,8 @@ async function getTicketStatus(this: ILoadOptionsFunctions) {
     }
 
     return ticket.map((status: { id: string, description: string }) => ({
-        id: status.id,
-        status: status.description,
+        value: status.id,
+        name: status.description,
     }));
 }
 
