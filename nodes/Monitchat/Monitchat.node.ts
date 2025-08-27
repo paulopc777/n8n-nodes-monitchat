@@ -65,7 +65,7 @@ async function getTicketStatus(this: ILoadOptionsFunctions) {
         json: true,
     });
 
-    const ticket = response.data.data;
+    const ticket = response.data;
 
     if (!ticket) {
         throw new Error('Não foi possível obter o status do ticket');
