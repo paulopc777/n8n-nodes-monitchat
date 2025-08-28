@@ -10,7 +10,7 @@ const displayOptions = {
 
 export const changeTicketStatusProperties: INodeProperties[] = [
     {
-        displayName: 'Conversation ID',
+        displayName: 'Ticket id',
         name: 'conversation_id',
         type: 'string',
         default: '',
