@@ -431,6 +431,7 @@ export class Monitchat implements INodeType {
                         name: fileName,
                         file_name: fileName,
                         url: fileUrl,
+                        sent_by_bot: true
                     },
                     json: true,
                 };
@@ -461,7 +462,7 @@ export class Monitchat implements INodeType {
 
             }
 
-            if(operation == "changeTicketStatus") {
+            if (operation == "changeTicketStatus") {
                 const credentials = await this.getCredentials('monitchat');
                 const conversationId = this.getNodeParameter('conversation_id', i) as string;
                 const statusId = this.getNodeParameter('statusId', i) as string;
